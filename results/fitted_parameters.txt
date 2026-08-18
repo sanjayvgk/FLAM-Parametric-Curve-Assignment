@@ -1,4 +1,4 @@
-FLAM Research and Development / AI Assignment
+FLAM Research and Development
 Parametric Curve Unknown Parameter Estimation
 
 Final Parameters
