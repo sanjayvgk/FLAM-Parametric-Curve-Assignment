@@ -1,0 +1,17 @@
+FLAM Research and Development / AI Assignment
+Parametric Curve Unknown Parameter Estimation
+
+Final Parameters
+theta = 30 degrees
+M = 0.03
+X = 55
+
+Numerical Optimization Result
+theta = 29.9999730015 degrees
+M = 0.0299999971
+X = 54.9999983399
+
+Error Metrics
+Mean L1 residual = 2.558593110990e-06
+Maximum residual = 1.745866859326e-05
+RMSE = 3.487060775467e-06
