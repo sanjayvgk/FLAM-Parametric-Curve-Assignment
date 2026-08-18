@@ -1,7 +1,6 @@
-<<<<<<< HEAD
-# Research and Development / AI Assignment
+# FLAM Parametric Curve Assignment
 
-## Parametric Curve Unknown Parameter Estimation
+Research and Development - Parametric Curve Unknown Parameter Estimation
 
 ## 1. Problem Statement
 
@@ -10,11 +9,11 @@ The objective of this assignment is to determine the unknown parameters θ, M, a
 The given curve is:
 
 [
-x=t\cos(\theta)-e^{M|t|}\sin(0.3t)\sin(\theta)+X
+x = t\cos(\theta) - e^{M|t|}\sin(0.3t)\sin(\theta) + X
 ]
 
 [
-y=42+t\sin(\theta)+e^{M|t|}\sin(0.3t)\cos(\theta)
+y = 42 + t\sin(\theta) + e^{M|t|}\sin(0.3t)\cos(\theta)
 ]
 
 The supplied resource contains 1,500 points that lie on the required curve.
@@ -36,7 +35,7 @@ The parameter constraints provided in the assignment are:
 and
 
 [
-6 < t < 60.
+6 < t < 60
 ]
 
 ---
@@ -45,20 +44,20 @@ and
 
 The input data is provided in:
 
-text
+```text
 data/UVCE_BTech_Flam_Resource.csv
-
+```
 
 The CSV contains two columns:
 
-text
+```text
 x
 y
-
+```
 
 and contains 1,500 observed points.
 
-The order of the points in the CSV is not assumed to correspond to increasing values of the parameter t.
+The order of the points in the CSV is not assumed to correspond to increasing values of the parameter (t).
 
 ---
 
@@ -67,17 +66,17 @@ The order of the points in the CSV is not assumed to correspond to increasing va
 The original equations can be simplified by defining:
 
 [
-A=e^{M|t|}\sin(0.3t).
+A = e^{M|t|}\sin(0.3t)
 ]
 
 The equations then become:
 
 [
-x-X=t\cos(\theta)-A\sin(\theta)
+x-X = t\cos(\theta)-A\sin(\theta)
 ]
 
 [
-y-42=t\sin(\theta)+A\cos(\theta).
+y-42 = t\sin(\theta)+A\cos(\theta)
 ]
 
 This can be interpreted as a rotation of the vector:
@@ -100,13 +99,13 @@ t=(x-X)\cos(\theta)+(y-42)\sin(\theta)
 and
 
 [
-A=-(x-X)\sin(\theta)+(y-42)\cos(\theta).
+A=-(x-X)\sin(\theta)+(y-42)\cos(\theta)
 ]
 
-Since
+Since:
 
 [
-A=e^{M|t|}\sin(0.3t),
+A=e^{M|t|}\sin(0.3t)
 ]
 
 the transformed coordinates must satisfy:
@@ -115,40 +114,40 @@ the transformed coordinates must satisfy:
 -(x-X)\sin(\theta)+(y-42)\cos(\theta)
 =====================================
 
-e^{M|t|}\sin(0.3t).
+e^{M|t|}\sin(0.3t)
 ]
 
-This transformation removes the need to independently optimize the value of t for every observed point.
+This transformation removes the need to independently optimize the value of (t) for every observed point.
 
 ---
 
 ## 4. Residual Function
 
-For each observed point (x_i, y_i), calculate:
+For each observed point ((x_i,y_i)), calculate:
 
 [
 t_i=(x_i-X)\cos(\theta)+(y_i-42)\sin(\theta)
 ]
 
-and
+and:
 
 [
-v_i=-(x_i-X)\sin(\theta)+(y_i-42)\cos(\theta).
+v_i=-(x_i-X)\sin(\theta)+(y_i-42)\cos(\theta)
 ]
 
 The predicted value of the transformed coordinate is:
 
 [
-\hat v_i=e^{M|t_i|}\sin(0.3t_i).
+\hat{v}_i=e^{M|t_i|}\sin(0.3t_i)
 ]
 
 Therefore, the residual is:
 
 [
-r_i=v_i-\hat v_i.
+r_i=v_i-\hat{v}_i
 ]
 
-For the correct values of θ, M, and X, the residuals should be close to zero.
+For the correct values of (\theta), (M), and (X), the residuals should be close to zero.
 
 ---
 
@@ -163,7 +162,7 @@ L(\theta,M,X)
 =============
 
 \frac{1}{N}
-\sum_{i=1}^{N}|r_i|.
+\sum_{i=1}^{N}|r_i|
 ]
 
 The search is restricted to the parameter ranges specified in the assignment.
@@ -174,23 +173,28 @@ A global numerical optimization method is used to search the three-dimensional p
 
 ## 6. Numerical Optimization
 
-The implementation uses Python with NumPy, Pandas, SciPy, and Matplotlib.
+The implementation uses Python with the following libraries:
+
+* NumPy
+* Pandas
+* SciPy
+* Matplotlib
 
 The optimizer searches the following ranges:
 
-text
+```text
 0° < θ < 50°
 -0.05 < M < 0.05
 0 < X < 100
-
+```
 
 The fitted numerical values are approximately:
 
-text
+```text
 θ = 29.999973°
 M = 0.029999997
 X = 54.999998
-
+```
 
 These values correspond to the exact parameters:
 
@@ -223,33 +227,33 @@ y=42+t\sin(30^\circ)+e^{0.03|t|}\sin(0.3t)\cos(30^\circ)
 for:
 
 [
-6<t<60.
+6<t<60
 ]
 
 Using:
 
 [
-\cos(30^\circ)=\frac{\sqrt3}{2}
+\cos(30^\circ)=\frac{\sqrt{3}}{2}
 ]
 
-and
+and:
 
 [
-\sin(30^\circ)=\frac12,
+\sin(30^\circ)=\frac{1}{2}
 ]
 
 the equations can also be written as:
 
 [
 x=
-55+\frac{\sqrt3}{2}t
--\frac12e^{0.03|t|}\sin(0.3t)
+55+\frac{\sqrt{3}}{2}t
+-\frac{1}{2}e^{0.03|t|}\sin(0.3t)
 ]
 
 [
 y=
-42+\frac12t
-+\frac{\sqrt3}{2}e^{0.03|t|}\sin(0.3t).
+42+\frac{1}{2}t
++\frac{\sqrt{3}}{2}e^{0.03|t|}\sin(0.3t)
 ]
 
 ---
@@ -260,20 +264,20 @@ The recovered parameters were tested against all 1,500 supplied points.
 
 Using:
 
-text
+```text
 θ = 30°
 M = 0.03
 X = 55
-
+```
 
 the transformed-coordinate residual is extremely small.
 
 The numerical optimization produced approximately:
 
-text
+```text
 Mean absolute residual ≈ 2.56 × 10^-6
 Maximum absolute residual ≈ 1.75 × 10^-5
-
+```
 
 This confirms that the recovered parameters closely reproduce the supplied curve.
 
@@ -283,17 +287,23 @@ This confirms that the recovered parameters closely reproduce the supplied curve
 
 Install the required Python packages:
 
-bash
+```bash
 pip install -r requirements.txt
-
+```
 
 Then execute:
 
-bash
+```bash
 python solution.py
+```
 
+The program:
 
-The program loads the CSV data, performs the parameter estimation, prints the fitted parameters and error metrics, and generates a curve comparison plot.
+1. Loads the CSV data.
+2. Performs the parameter estimation.
+3. Prints the fitted parameters.
+4. Calculates the error metrics.
+5. Generates a curve comparison plot.
 
 ---
 
@@ -305,28 +315,26 @@ The final fitted curve can also be viewed interactively in Desmos:
 
 The Desmos graph uses the recovered values:
 
-text
+```text
 θ = 30°
 M = 0.03
 X = 55
-
+```
 
 with the parameter range:
 
-text
+```text
 6 < t < 60
-
+```
 
 ---
 
 ## 11. Final Answer
+
+The recovered unknown parameters are:
 
 [
 \boxed{\theta=30^\circ,\quad M=0.03,\quad X=55}
 ]
 
 These are the unknown parameter values obtained from the supplied point data and the specified parameter constraints.
-=======
-# FLAM-Parametric-Curve-Assignment
-Research and Development - Parametric Curve Unknown Parameter Estimation
->>>>>>> e673aa3d14272beeb09a8d9800d976369a25955b
