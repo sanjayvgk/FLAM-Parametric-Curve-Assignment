@@ -1,19 +1,35 @@
-# FLAM Parametric Curve Assignment
+# FLAM R&D / AI Assignment
 
-## Final answer
+## Parametric Curve Parameter Estimation
 
-**theta = 30 degrees = pi/6 radians, M = 0.03, X = 55**
+This repository estimates the unknown parameters $\theta$, $M$, and $X$ of the supplied parametric curve from 1,500 unordered $(x,y)$ observations.
 
-For \(6<t<60\), the submitted curve is
+## Submission answer
+
+The recovered parameters are:
+
+$$
+\boxed{\theta=30^\circ=\frac{\pi}{6}\text{ radians},\qquad M=0.03,\qquad X=55}
+$$
+
+Substituting them into the original equation gives, for $6<t<60$:
 
 $$
 \begin{aligned}
-x(t)&=t\cos\left(\frac{\pi}{6}\right)-e^{0.03|t|}\sin(0.3t)\sin\left(\frac{\pi}{6}\right)+55,\\
-y(t)&=42+t\sin\left(\frac{\pi}{6}\right)+e^{0.03|t|}\sin(0.3t)\cos\left(\frac{\pi}{6}\right).
+x(t)
+&=t\cos\left(\frac{\pi}{6}\right)
+-e^{0.03|t|}\sin(0.3t)\sin\left(\frac{\pi}{6}\right)+55,\\[4pt]
+y(t)
+&=42+t\sin\left(\frac{\pi}{6}\right)
++e^{0.03|t|}\sin(0.3t)\cos\left(\frac{\pi}{6}\right).
 \end{aligned}
 $$
 
-Copy-paste expression for [Desmos](https://www.desmos.com/calculator/rfj91yrxob):
+### Desmos verification
+
+[Open the final curve in Desmos](https://www.desmos.com/calculator/dnm1sdkavp)
+
+Copy-paste expression:
 
 ```text
 \left(t\cos\left(\frac{\pi}{6}\right)-e^{0.03\left|t\right|}\sin(0.3t)\sin\left(\frac{\pi}{6}\right)+55,\ 42+t\sin\left(\frac{\pi}{6}\right)+e^{0.03\left|t\right|}\sin(0.3t)\cos\left(\frac{\pi}{6}\right)\right)\left\{6<t<60\right\}
@@ -21,17 +37,55 @@ Copy-paste expression for [Desmos](https://www.desmos.com/calculator/rfj91yrxob)
 
 ![Supplied observations and submitted curve](results/curve_plot.svg)
 
+## Problem statement
+
+The supplied points lie on the curve
+
+$$
+\begin{aligned}
+x&=t\cos(\theta)-e^{M|t|}\sin(0.3t)\sin(\theta)+X,\\
+y&=42+t\sin(\theta)+e^{M|t|}\sin(0.3t)\cos(\theta),
+\end{aligned}
+$$
+
+with the constraints
+
+$$
+0^\circ<\theta<50^\circ,
+\qquad -0.05<M<0.05,
+\qquad 0<X<100,
+\qquad 6<t<60.
+$$
+
+The input is [`data/UVCE_BTech_Flam_Resource.csv`](data/UVCE_BTech_Flam_Resource.csv), containing 1,500 observations. Their file order is not assumed to correspond to increasing $t$.
+
 ## Method
 
-Writing \(A=e^{M|t|}\sin(0.3t)\), the translated observations are a rotation:
+Define
 
 $$
-\begin{bmatrix}x-X\\y-42\end{bmatrix}=
-\begin{bmatrix}\cos\theta&-\sin\theta\\\sin\theta&\cos\theta\end{bmatrix}
-\begin{bmatrix}t\\A\end{bmatrix}.
+A(t)=e^{M|t|}\sin(0.3t).
 $$
 
-The inverse rotation therefore gives
+After translating the observations by $(X,42)$, the curve becomes a rotation:
+
+$$
+\begin{bmatrix}
+x-X\\
+y-42
+\end{bmatrix}
+=
+\begin{bmatrix}
+\cos\theta&-\sin\theta\\
+\sin\theta&\cos\theta
+\end{bmatrix}
+\begin{bmatrix}
+t\\
+A(t)
+\end{bmatrix}.
+$$
+
+Applying the inverse rotation gives, for every observation $(x_i,y_i)$:
 
 $$
 \begin{aligned}
@@ -40,68 +94,113 @@ v_i&=-(x_i-X)\sin\theta+(y_i-42)\cos\theta.
 \end{aligned}
 $$
 
-SciPy differential evolution (seed 42) minimizes the **fitting objective**
-\(\operatorname{mean}(|v_i-e^{M|t_i|}\sin(0.3t_i)|)\), within the assignment bounds
-\(0^\circ<\theta<50^\circ\), \(-0.05<M<0.05\), and \(0<X<100\).
+For the correct parameters,
 
-This is not the assignment evaluator's metric. The evaluator uses uniformly sampled,
-pointwise two-dimensional L1 distance:
-\(\operatorname{mean}(|x_{pred}(t_j)-x_{expected}(t_j)|+|y_{pred}(t_j)-y_{expected}(t_j)|)\).
-It depends on the sampling grid and on matching equal parameter values; it is not a
-nearest-point distance and should not be compared numerically with the fitting objective.
+$$
+v_i=e^{M|t_i|}\sin(0.3t_i).
+$$
 
-## Numerical verification
+Therefore, the fitting residual is
+
+$$
+r_i=v_i-e^{M|t_i|}\sin(0.3t_i),
+$$
+
+and the numerical search minimizes
+
+$$
+L_{\mathrm{fit}}(\theta,M,X)
+=\frac{1}{N}\sum_{i=1}^{N}|r_i|.
+$$
+
+The implementation uses bounded SciPy differential evolution with seed 42. This global three-parameter search avoids fitting an independent value of $t$ for every observation.
+
+## Assignment metric
+
+The fitting residual above is the optimization objective. The assignment evaluator instead uses pointwise two-dimensional L1 distance between expected and predicted curves at identical, uniformly sampled values of $t$:
+
+$$
+L_{\mathrm{curve}}
+=\frac{1}{K}\sum_{j=1}^{K}
+\left(
+|x_{\mathrm{pred}}(t_j)-x_{\mathrm{expected}}(t_j)|
++|y_{\mathrm{pred}}(t_j)-y_{\mathrm{expected}}(t_j)|
+\right).
+$$
+
+The hidden expected curve is unavailable locally. The code implements the same uniform pointwise formula to compare the numerical fit with the clean submitted parameters as a stability check.
+
+## Numerical results
+
+| Parameter | Numerical fit | Submitted value |
+|---|---:|---:|
+| $\theta$ | $29.9999730015^\circ$ | $30^\circ=\pi/6$ |
+| $M$ | $0.0299999971$ | $0.03$ |
+| $X$ | $54.9999983399$ | $55$ |
+
+Validation across all supplied observations:
 
 | Check | Result |
 |---|---:|
 | Observations used | 1,500 |
-| Fitted theta | 29.9999730015 degrees |
-| Fitted M | 0.0299999971 |
-| Fitted X | 54.9999983399 |
-| Fitted mean transformed absolute residual | 2.558593110990e-6 |
-| Fitted maximum transformed absolute residual | 1.745866859326e-5 |
-| Uniform curve L1, fitted versus submitted | 1.946105917974e-5 |
+| Inferred $t$ range | 6.0494044746 to 59.9951670058 |
+| Fitted mean transformed absolute residual | $2.558593110992\times10^{-6}$ |
+| Fitted maximum transformed absolute residual | $1.745866859326\times10^{-5}$ |
+| Submitted-value mean transformed absolute residual | $1.504827005253\times10^{-5}$ |
+| Submitted-value maximum transformed absolute residual | $4.051144748252\times10^{-5}$ |
+| Uniform curve L1, numerical fit versus submitted curve | $1.946108109428\times10^{-5}$ |
 
-The tiny fit residuals are consistent with decimal rounding in the supplied observations.
-The numerical values are correspondingly close to a clear clean pattern, so the submission
-rounds theta to 30 degrees, M to 0.03, and X to 55. The program independently requires the
-uniform fitted-versus-rounded curve difference to remain below \(10^{-3}\).
+The numerical solution is extremely close to the clean values $30^\circ$, $0.03$, and $55$. The small difference is consistent with decimal rounding in the supplied observations. The program revalidates the rounded values and requires the fitted-versus-submitted uniform curve L1 difference to remain below $10^{-3}$.
 
-## Install and run
+## Reproduce the result
 
-Python 3.12 is used in CI.
+Python 3.12 is used by the automated workflow.
 
 ```bash
 python -m venv .venv
-. .venv/bin/activate
+source .venv/bin/activate
 python -m pip install -r requirements.txt
 MPLBACKEND=Agg python solution.py
+```
+
+Run the tests with:
+
+```bash
 python -m unittest discover -s tests -v
 ```
 
-Paths are resolved relative to `solution.py`, so the default command works from any current
-directory. Options are `--data PATH`, `--output-dir DIR`, `--validation-samples N`, and
-`--show` (interactive plotting; off by default). Run `python solution.py --help` for details.
-The deterministic run writes `results/fitted_parameters.txt` and the text-based,
-diff-reviewable `results/curve_plot.svg`.
-
-## Manual Desmos verification
-
-Open the assignment [Desmos calculator](https://www.desmos.com/calculator/rfj91yrxob), paste
-the expression above, and visually confirm the domain-restricted curve. Checking while signed
-out is recommended to ensure the shared calculator and expression are publicly accessible.
-
-## Project structure
+The program resolves default paths relative to `solution.py`, so it can be launched from any working directory. Available options are:
 
 ```text
-data/UVCE_BTech_Flam_Resource.csv  supplied 1,500 observations
-results/                           deterministic summary and plot
-solution.py                        fitting, validation, CLI, and plotting
-tests/test_solution.py             standard-library unit tests
-.github/workflows/test.yml         Python 3.12 CI and smoke test
+--data PATH
+--output-dir DIR
+--validation-samples N
+--show
+```
+
+The deterministic run generates:
+
+- `results/fitted_parameters.txt`
+- `results/curve_plot.svg`
+
+## Repository structure
+
+```text
+.
+|-- data/
+|   `-- UVCE_BTech_Flam_Resource.csv
+|-- results/
+|   |-- curve_plot.svg
+|   `-- fitted_parameters.txt
+|-- tests/
+|   `-- test_solution.py
+|-- .github/workflows/test.yml
+|-- README.md
+|-- requirements.txt
+`-- solution.py
 ```
 
 ## References
 
-- Assignment-provided [Desmos calculator](https://www.desmos.com/calculator/rfj91yrxob)
+- [Final Desmos visualization](https://www.desmos.com/calculator/dnm1sdkavp)
 - [SciPy `differential_evolution` documentation](https://docs.scipy.org/doc/scipy/reference/generated/scipy.optimize.differential_evolution.html)
