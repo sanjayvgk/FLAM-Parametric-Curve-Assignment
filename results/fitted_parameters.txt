@@ -1,8 +1,11 @@
-FLAM Research and Development
+FLAM Research and Development / AI Assignment
 Parametric Curve Unknown Parameter Estimation
 
+Observations used: 1500
+Inferred t range: 6.0494044746 to 59.9951670058
+
 Final Parameters
-theta = 30 degrees
+theta = 30 degrees = pi/6 radians
 M = 0.03
 X = 55
 
@@ -11,7 +14,14 @@ theta = 29.9999730015 degrees
 M = 0.0299999971
 X = 54.9999983399
 
-Error Metrics
-Mean L1 residual = 2.558593110990e-06
-Maximum residual = 1.745866859326e-05
+Fitted Transformed-Coordinate Residual Metrics
+Mean absolute residual = 2.558593110992e-06
+Maximum absolute residual = 1.745866859326e-05
 RMSE = 3.487060775467e-06
+
+Submitted-Value Transformed-Coordinate Residual Metrics
+Mean absolute residual = 1.504827005253e-05
+Maximum absolute residual = 4.051144748252e-05
+RMSE = 1.708473923094e-05
+
+Uniform pointwise curve L1 difference (fitted versus submitted) = 1.946108109428e-05

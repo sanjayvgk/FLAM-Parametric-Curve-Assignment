@@ -1,340 +1,107 @@
 # FLAM Parametric Curve Assignment
 
-Research and Development - Parametric Curve Unknown Parameter Estimation
+## Final answer
 
-## 1. Problem Statement
+**theta = 30 degrees = pi/6 radians, M = 0.03, X = 55**
 
-The objective of this assignment is to determine the unknown parameters θ, M, and X of a given parametric curve using the supplied set of (x, y) points.
+For \(6<t<60\), the submitted curve is
 
-The given curve is:
+$$
+\begin{aligned}
+x(t)&=t\cos\left(\frac{\pi}{6}\right)-e^{0.03|t|}\sin(0.3t)\sin\left(\frac{\pi}{6}\right)+55,\\
+y(t)&=42+t\sin\left(\frac{\pi}{6}\right)+e^{0.03|t|}\sin(0.3t)\cos\left(\frac{\pi}{6}\right).
+\end{aligned}
+$$
 
-[
-x = t\cos(\theta) - e^{M|t|}\sin(0.3t)\sin(\theta) + X
-]
-
-[
-y = 42 + t\sin(\theta) + e^{M|t|}\sin(0.3t)\cos(\theta)
-]
-
-The supplied resource contains 1,500 points that lie on the required curve.
-
-The parameter constraints provided in the assignment are:
-
-[
-0^\circ < \theta < 50^\circ
-]
-
-[
--0.05 < M < 0.05
-]
-
-[
-0 < X < 100
-]
-
-and
-
-[
-6 < t < 60
-]
-
----
-
-## 2. Input Data
-
-The input data is provided in:
+Copy-paste expression for [Desmos](https://www.desmos.com/calculator/rfj91yrxob):
 
 ```text
-data/UVCE_BTech_Flam_Resource.csv
+\left(t\cos\left(\frac{\pi}{6}\right)-e^{0.03\left|t\right|}\sin(0.3t)\sin\left(\frac{\pi}{6}\right)+55,\ 42+t\sin\left(\frac{\pi}{6}\right)+e^{0.03\left|t\right|}\sin(0.3t)\cos\left(\frac{\pi}{6}\right)\right)\left\{6<t<60\right\}
 ```
 
-The CSV contains two columns:
-
-```text
-x
-y
-```
-
-and contains 1,500 observed points.
-
-The order of the points in the CSV is not assumed to correspond to increasing values of the parameter (t).
-
----
-
-## 3. Mathematical Transformation
-
-The original equations can be simplified by defining:
-
-[
-A = e^{M|t|}\sin(0.3t)
-]
-
-The equations then become:
-
-[
-x-X = t\cos(\theta)-A\sin(\theta)
-]
-
-[
-y-42 = t\sin(\theta)+A\cos(\theta)
-]
-
-This can be interpreted as a rotation of the vector:
-
-[
-\begin{bmatrix}
-t\
-A
-\end{bmatrix}
-]
-
-by the angle (\theta).
-
-Therefore, applying the inverse rotation gives:
-
-[
-t=(x-X)\cos(\theta)+(y-42)\sin(\theta)
-]
-
-and
-
-[
-A=-(x-X)\sin(\theta)+(y-42)\cos(\theta)
-]
-
-Since:
-
-[
-A=e^{M|t|}\sin(0.3t)
-]
-
-the transformed coordinates must satisfy:
-
-[
--(x-X)\sin(\theta)+(y-42)\cos(\theta)
-=====================================
-
-e^{M|t|}\sin(0.3t)
-]
-
-This transformation removes the need to independently optimize the value of (t) for every observed point.
-
----
-
-## 4. Residual Function
-
-For each observed point ((x_i,y_i)), calculate:
-
-[
-t_i=(x_i-X)\cos(\theta)+(y_i-42)\sin(\theta)
-]
-
-and:
-
-[
-v_i=-(x_i-X)\sin(\theta)+(y_i-42)\cos(\theta)
-]
-
-The predicted value of the transformed coordinate is:
-
-[
-\hat{v}_i=e^{M|t_i|}\sin(0.3t_i)
-]
-
-Therefore, the residual is:
-
-[
-r_i=v_i-\hat{v}_i
-]
-
-For the correct values of (\theta), (M), and (X), the residuals should be close to zero.
-
----
-
-## 5. Optimization Objective
-
-The assignment evaluates the L1 distance between the expected and predicted curve.
-
-Therefore, the optimization objective used in this solution is the mean absolute residual:
-
-[
-L(\theta,M,X)
-=============
-
-\frac{1}{N}
-\sum_{i=1}^{N}|r_i|
-]
-
-The search is restricted to the parameter ranges specified in the assignment.
-
-A global numerical optimization method is used to search the three-dimensional parameter space.
-
----
-
-## 6. Numerical Optimization
-
-The implementation uses Python with the following libraries:
-
-* NumPy
-* Pandas
-* SciPy
-* Matplotlib
-
-The optimizer searches the following ranges:
-
-```text
-0° < θ < 50°
--0.05 < M < 0.05
-0 < X < 100
-```
-
-The fitted numerical values are approximately:
-
-```text
-θ = 29.999973°
-M = 0.029999997
-X = 54.999998
-```
-
-These values correspond to the exact parameters:
-
-[
-\boxed{\theta=30^\circ}
-]
-
-[
-\boxed{M=0.03}
-]
-
-[
-\boxed{X=55}
-]
-
----
-
-## 7. Final Parametric Curve
-
-Substituting the recovered parameters into the original equations gives:
-
-[
-x=t\cos(30^\circ)-e^{0.03|t|}\sin(0.3t)\sin(30^\circ)+55
-]
-
-[
-y=42+t\sin(30^\circ)+e^{0.03|t|}\sin(0.3t)\cos(30^\circ)
-]
-
-for:
-
-[
-6<t<60
-]
-
-Using:
-
-[
-\cos(30^\circ)=\frac{\sqrt{3}}{2}
-]
-
-and:
-
-[
-\sin(30^\circ)=\frac{1}{2}
-]
-
-the equations can also be written as:
-
-[
-x=
-55+\frac{\sqrt{3}}{2}t
--\frac{1}{2}e^{0.03|t|}\sin(0.3t)
-]
-
-[
-y=
-42+\frac{1}{2}t
-+\frac{\sqrt{3}}{2}e^{0.03|t|}\sin(0.3t)
-]
-
----
-
-## 8. Verification
-
-The recovered parameters were tested against all 1,500 supplied points.
-
-Using:
-
-```text
-θ = 30°
-M = 0.03
-X = 55
-```
-
-the transformed-coordinate residual is extremely small.
-
-The numerical optimization produced approximately:
-
-```text
-Mean absolute residual ≈ 2.56 × 10^-6
-Maximum absolute residual ≈ 1.75 × 10^-5
-```
-
-This confirms that the recovered parameters closely reproduce the supplied curve.
-
----
-
-## 9. How to Run the Solution
-
-Install the required Python packages:
+![Supplied observations and submitted curve](results/curve_plot.svg)
+
+## Method
+
+Writing \(A=e^{M|t|}\sin(0.3t)\), the translated observations are a rotation:
+
+$$
+\begin{bmatrix}x-X\\y-42\end{bmatrix}=
+\begin{bmatrix}\cos\theta&-\sin\theta\\\sin\theta&\cos\theta\end{bmatrix}
+\begin{bmatrix}t\\A\end{bmatrix}.
+$$
+
+The inverse rotation therefore gives
+
+$$
+\begin{aligned}
+t_i&=(x_i-X)\cos\theta+(y_i-42)\sin\theta,\\
+v_i&=-(x_i-X)\sin\theta+(y_i-42)\cos\theta.
+\end{aligned}
+$$
+
+SciPy differential evolution (seed 42) minimizes the **fitting objective**
+\(\operatorname{mean}(|v_i-e^{M|t_i|}\sin(0.3t_i)|)\), within the assignment bounds
+\(0^\circ<\theta<50^\circ\), \(-0.05<M<0.05\), and \(0<X<100\).
+
+This is not the assignment evaluator's metric. The evaluator uses uniformly sampled,
+pointwise two-dimensional L1 distance:
+\(\operatorname{mean}(|x_{pred}(t_j)-x_{expected}(t_j)|+|y_{pred}(t_j)-y_{expected}(t_j)|)\).
+It depends on the sampling grid and on matching equal parameter values; it is not a
+nearest-point distance and should not be compared numerically with the fitting objective.
+
+## Numerical verification
+
+| Check | Result |
+|---|---:|
+| Observations used | 1,500 |
+| Fitted theta | 29.9999730015 degrees |
+| Fitted M | 0.0299999971 |
+| Fitted X | 54.9999983399 |
+| Fitted mean transformed absolute residual | 2.558593110990e-6 |
+| Fitted maximum transformed absolute residual | 1.745866859326e-5 |
+| Uniform curve L1, fitted versus submitted | 1.946105917974e-5 |
+
+The tiny fit residuals are consistent with decimal rounding in the supplied observations.
+The numerical values are correspondingly close to a clear clean pattern, so the submission
+rounds theta to 30 degrees, M to 0.03, and X to 55. The program independently requires the
+uniform fitted-versus-rounded curve difference to remain below \(10^{-3}\).
+
+## Install and run
+
+Python 3.12 is used in CI.
 
 ```bash
-pip install -r requirements.txt
+python -m venv .venv
+. .venv/bin/activate
+python -m pip install -r requirements.txt
+MPLBACKEND=Agg python solution.py
+python -m unittest discover -s tests -v
 ```
 
-Then execute:
+Paths are resolved relative to `solution.py`, so the default command works from any current
+directory. Options are `--data PATH`, `--output-dir DIR`, `--validation-samples N`, and
+`--show` (interactive plotting; off by default). Run `python solution.py --help` for details.
+The deterministic run writes `results/fitted_parameters.txt` and the text-based,
+diff-reviewable `results/curve_plot.svg`.
 
-```bash
-python solution.py
-```
+## Manual Desmos verification
 
-The program:
+Open the assignment [Desmos calculator](https://www.desmos.com/calculator/rfj91yrxob), paste
+the expression above, and visually confirm the domain-restricted curve. Checking while signed
+out is recommended to ensure the shared calculator and expression are publicly accessible.
 
-1. Loads the CSV data.
-2. Performs the parameter estimation.
-3. Prints the fitted parameters.
-4. Calculates the error metrics.
-5. Generates a curve comparison plot.
-
----
-
-## 10. Interactive Desmos Visualization
-
-The final fitted curve can also be viewed interactively in Desmos:
-
-[Open the Interactive Desmos Graph](https://www.desmos.com/calculator/dnm1sdkavp)
-
-The Desmos graph uses the recovered values:
+## Project structure
 
 ```text
-θ = 30°
-M = 0.03
-X = 55
+data/UVCE_BTech_Flam_Resource.csv  supplied 1,500 observations
+results/                           deterministic summary and plot
+solution.py                        fitting, validation, CLI, and plotting
+tests/test_solution.py             standard-library unit tests
+.github/workflows/test.yml         Python 3.12 CI and smoke test
 ```
 
-with the parameter range:
+## References
 
-```text
-6 < t < 60
-```
-
----
-
-## 11. Final Answer
-
-The recovered unknown parameters are:
-
-[
-\boxed{\theta=30^\circ,\quad M=0.03,\quad X=55}
-]
-
-These are the unknown parameter values obtained from the supplied point data and the specified parameter constraints.
+- Assignment-provided [Desmos calculator](https://www.desmos.com/calculator/rfj91yrxob)
+- [SciPy `differential_evolution` documentation](https://docs.scipy.org/doc/scipy/reference/generated/scipy.optimize.differential_evolution.html)
