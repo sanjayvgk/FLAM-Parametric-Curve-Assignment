@@ -27,7 +27,7 @@ $$
 
 ### Desmos verification
 
-[Open the final curve in Desmos](https://www.desmos.com/calculator/dnm1sdkavp)
+[Open the Final Curve in Desmos](https://www.desmos.com/calculator/dnm1sdkavp)
 
 Copy-paste expression:
 
@@ -35,7 +35,7 @@ Copy-paste expression:
 \left(t\cos\left(\frac{\pi}{6}\right)-e^{0.03\left|t\right|}\sin(0.3t)\sin\left(\frac{\pi}{6}\right)+55,\ 42+t\sin\left(\frac{\pi}{6}\right)+e^{0.03\left|t\right|}\sin(0.3t)\cos\left(\frac{\pi}{6}\right)\right)\left\{6<t<60\right\}
 ```
 
-![Supplied observations and submitted curve](results/curve_plot.svg)
+![Supplied Observations and Submitted Curve](results/curve_plot.svg)
 
 ## Problem statement
 
@@ -202,5 +202,5 @@ The deterministic run generates:
 
 ## References
 
-- [Final Desmos visualization](https://www.desmos.com/calculator/dnm1sdkavp)
-- [SciPy `differential_evolution` documentation](https://docs.scipy.org/doc/scipy/reference/generated/scipy.optimize.differential_evolution.html)
+- [Final Desmos Visualization](https://www.desmos.com/calculator/dnm1sdkavp)
+- [SciPy `Differential_Evolution` Documentation](https://docs.scipy.org/doc/scipy/reference/generated/scipy.optimize.differential_evolution.html)
